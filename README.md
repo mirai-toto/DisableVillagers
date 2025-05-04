@@ -14,3 +14,5 @@ disableVillages: prevents village structures from spawning in the world
 curedZombieLoot: if this option is set to null, curing zombie villagers is impossible.
 By supplying lootTable data (for example generated on https://misode.github.io/loot-table/ ), zombie villagers die when they are completely healed and drop the configured loot.
 
+tradeCycling: if this option is set to true, villagers trade will be set in stone when the villagers are spawned.
+

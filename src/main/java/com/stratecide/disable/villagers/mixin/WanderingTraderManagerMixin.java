@@ -10,9 +10,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WanderingTraderManager.class)
 public class WanderingTraderManagerMixin {
+
     @Inject(method = "spawn", at = @At("HEAD"), cancellable = true)
-    void blockWanderingTraders(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals, CallbackInfoReturnable<Integer> cir) {
-        if (DisableVillagersMod.disableWanderingTrader) {
+    private void onSpawnBlockWanderingTraders(ServerWorld world, boolean spawnMonsters,boolean spawnAnimals, CallbackInfoReturnable<Integer> cir) {
+        if (DisableVillagersMod.isDisableWanderingTrader()) {
             cir.setReturnValue(0);
         }
     }

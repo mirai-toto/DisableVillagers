@@ -16,8 +16,9 @@ public class DefaultBiomeFeaturesMixin {
      */
     @ModifyVariable(method = "addMonsters", at = @At("HEAD"), ordinal = 0)
     private static int fixZombieChance(int weight, SpawnSettings.Builder builder, int zombieWeight, int zombieVillagerWeight, int skeletonWeight) {
-        if (DisableVillagersMod.getDisabledZombies())
+        if (DisableVillagersMod.isDisableZombies()) {
             return weight + zombieVillagerWeight;
+        }
         return weight;
     }
 
@@ -26,8 +27,9 @@ public class DefaultBiomeFeaturesMixin {
      */
     @Redirect(method = "addMonsters", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/SpawnSettings$Builder;spawn(Lnet/minecraft/entity/SpawnGroup;Lnet/minecraft/world/biome/SpawnSettings$SpawnEntry;)Lnet/minecraft/world/biome/SpawnSettings$Builder;", ordinal = 2))
     private static SpawnSettings.Builder removeZombieVillagers(SpawnSettings.Builder builder, SpawnGroup spawnGroup, SpawnSettings.SpawnEntry spawnEntry) {
-        if (!DisableVillagersMod.getDisabledZombies())
+        if (!DisableVillagersMod.isDisableZombies()) {
             return builder.spawn(spawnGroup, spawnEntry);
+        }
         return builder;
     }
 }

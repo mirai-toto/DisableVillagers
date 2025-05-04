@@ -8,7 +8,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
@@ -30,31 +29,47 @@ public abstract class VillagerMixin extends MerchantEntity {
     }
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
-    private void tickInject(CallbackInfo ci) {
-        if (DisableVillagersMod.killVillagers && (!DisableVillagersMod.spareExperiencedVillagers || experience == 0) && !this.isDead()) {
+    private void onVillagerTickInject(CallbackInfo ci) {
+        if (DisableVillagersMod.isKillVillagers() && (!DisableVillagersMod.isSpareExperiencedVillagers() || experience == 0) && !this.isDead()) {
             this.kill();
             ci.cancel();
         }
     }
 
     @Inject(method = "isReadyToBreed", at = @At("HEAD"), cancellable = true)
-    private void isReadyToBreedInject(CallbackInfoReturnable<Boolean> cir) {
-        if (!DisableVillagersMod.breeding) {
+    private void onIsReadyToBreedInject(CallbackInfoReturnable<Boolean> cir) {
+        if (!DisableVillagersMod.isBreeding()) {
             cir.setReturnValue(false);
         }
     }
+    
+    // TODO: Trade cycling
 
     @Inject(method = "onInteractionWith", at=@At("HEAD"), cancellable = true)
-    private void finishConversionInject(EntityInteraction interaction, Entity player, CallbackInfo ci) {
-        if (DisableVillagersMod.curedZombieLoot != null && interaction == EntityInteraction.ZOMBIE_VILLAGER_CURED) {
-            DamageSource source = getWorld().getDamageSources().generic();
-            LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld) getWorld()).add(LootContextParameters.THIS_ENTITY, this).add(LootContextParameters.ORIGIN, this.getPos()).add(LootContextParameters.DAMAGE_SOURCE, source).addOptional(LootContextParameters.KILLER_ENTITY, source.getSource()).addOptional(LootContextParameters.DIRECT_KILLER_ENTITY, source.getSource());
-            if (player instanceof PlayerEntity) {
-                builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, (PlayerEntity) player).luck(((PlayerEntity) player).getLuck());
-            }
-            DisableVillagersMod.curedZombieLoot.generateLoot(builder.build(LootContextTypes.ENTITY), this::dropStack);
-            this.kill();
-            ci.cancel();
+    private void onInteractionWithInject(EntityInteraction interaction, Entity player, CallbackInfo ci) {
+        if (DisableVillagersMod.getCuredZombieLoot() == null || interaction != EntityInteraction.ZOMBIE_VILLAGER_CURED) {
+            return;
         }
+
+        ServerWorld world = (ServerWorld) getWorld();
+        DamageSource source = world.getDamageSources().generic();
+        
+        // When a zombie villager is cured, generate loot from the configured loot table
+        // and kill the villager instead of converting it to a normal villager
+        LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
+            .add(LootContextParameters.THIS_ENTITY, this)
+            .add(LootContextParameters.ORIGIN, this.getPos())
+            .add(LootContextParameters.DAMAGE_SOURCE, source)
+            .addOptional(LootContextParameters.KILLER_ENTITY, source.getSource())
+            .addOptional(LootContextParameters.DIRECT_KILLER_ENTITY, source.getSource());
+
+        if (player instanceof PlayerEntity playerEntity) {
+            builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, playerEntity).luck(playerEntity.getLuck());
+        }
+
+        DisableVillagersMod.getCuredZombieLoot().generateLoot(builder.build(LootContextTypes.ENTITY), this::dropStack);
+        
+        this.kill();
+        ci.cancel();
     }
 }

@@ -1,0 +1,24 @@
+{
+  "killVillagers": true,
+  "disableWanderingTrader": true,
+  "blockTrading": true,
+  "spareExperiencedVillagers": true,
+  "breeding": false,
+  "disableVillages": true,
+  "disableZombies": false,
+  "curableZombies": true,
+  "tradeCycling": true,
+  "curedZombieLoot": {
+    "pools": [
+      {
+        "rolls": 1,
+        "entries": [
+          {
+            "type": "minecraft:item",
+            "name": "minecraft:emerald_block"
+          }
+        ]
+      }
+    ]
+  }
+} 

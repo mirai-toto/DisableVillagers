@@ -14,9 +14,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MerchantEntityMixin {
 
     @Inject(method = "getOffers", at = @At("HEAD"), cancellable = true)
-    private void injectGetOffers(CallbackInfoReturnable<TradeOfferList> cir) {
-        if (DisableVillagersMod.blockTrading && ((Object) this) instanceof VillagerEntity
-        || DisableVillagersMod.disableWanderingTrader && ((Object) this) instanceof WanderingTraderEntity) {
+    private void onGetOffersInject(CallbackInfoReturnable<TradeOfferList> cir) {
+        Object self = this;
+        if ((self instanceof VillagerEntity && DisableVillagersMod.isBlockTrading()) ||
+            (self instanceof WanderingTraderEntity && DisableVillagersMod.isDisableWanderingTrader())) {
             cir.setReturnValue(new TradeOfferList());
         }
     }

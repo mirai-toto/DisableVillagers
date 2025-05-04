@@ -28,15 +28,15 @@ public abstract class ZombieVillagerMixin extends ZombieEntity {
 
 	@Shadow private UUID converter;
 
-	public ZombieVillagerMixin(World world) {
+	protected ZombieVillagerMixin(World world) {
 		super(world);
 	}
 
 	@Inject(method = "interactMob", at=@At("HEAD"), cancellable = true)
-	private void interactMobInject(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-		if (!DisableVillagersMod.curableZombies) {
+	private void onInteractMobInject(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+		if (!DisableVillagersMod.isCurableZombies()) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			if (itemStack.getItem() == Items.GOLDEN_APPLE) {
+			if (itemStack == Items.GOLDEN_APPLE) {
 				cir.setReturnValue(ActionResult.PASS);
 			}
 		}

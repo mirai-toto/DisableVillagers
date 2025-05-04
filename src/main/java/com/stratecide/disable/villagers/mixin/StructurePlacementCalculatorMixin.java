@@ -15,19 +15,17 @@ import java.util.stream.Stream;
 
 @Mixin(StructurePlacementCalculator.class)
 public class StructurePlacementCalculatorMixin {
+
     @ModifyVariable(method = "create(Lnet/minecraft/world/gen/noise/NoiseConfig;JLnet/minecraft/world/biome/source/BiomeSource;Ljava/util/stream/Stream;)Lnet/minecraft/world/gen/chunk/placement/StructurePlacementCalculator;", at = @At("HEAD"), argsOnly = true)
-    private static Stream<RegistryEntry<StructureSet>> removeVillages1(Stream<RegistryEntry<StructureSet>> structureSets) {
-        if (DisableVillagersMod.getDisabledVillages()) {
-            return structureSets.filter(entry ->
-                    !entry.matchesKey(StructureSetKeys.VILLAGES)
-            );
-        } else {
-            return structureSets;
+    private static Stream<RegistryEntry<StructureSet>> filterVillageStructures(Stream<RegistryEntry<StructureSet>> structureSets) {
+        if (DisableVillagersMod.isDisableVillages()) {
+            return structureSets.filter(entry -> !entry.matchesKey(StructureSetKeys.VILLAGES));
         }
+        return structureSets;
     }
 
     @Redirect(method = "create(Lnet/minecraft/world/gen/noise/NoiseConfig;JLnet/minecraft/world/biome/source/BiomeSource;Lnet/minecraft/registry/RegistryWrapper;)Lnet/minecraft/world/gen/chunk/placement/StructurePlacementCalculator;", at = @At(value = "INVOKE", target = "Ljava/util/stream/Stream;collect(Ljava/util/stream/Collector;)Ljava/lang/Object;"))
-    private static Object removeVillages2(Stream<RegistryEntry<StructureSet>> stream, Collector collector) {
-        return removeVillages1(stream).collect(collector);
+    private static Object filterAndCollectStructures(Stream<RegistryEntry<StructureSet>> stream, Collector collector) {
+        return filterVillageStructures(stream).collect(collector);
     }
 }

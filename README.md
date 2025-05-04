@@ -22,6 +22,7 @@ You must manually edit this file to change behavior.
 * **`spareExperiencedVillagers`**
   Only works if `killVillagers` is `true`.
   Villagers that have been traded with (i.e., have XP) will be spared.
+  So if you want to keep some villagers but prevent more from spawning, set this to true.
 
 * **`breeding`**
   Enables or disables villager breeding.

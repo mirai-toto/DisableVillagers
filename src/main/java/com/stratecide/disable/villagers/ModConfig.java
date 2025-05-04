@@ -21,6 +21,7 @@ public class ModConfig {
     public final boolean curableZombies;
     public final boolean disableVillages;
     public final LootTable curedZombieLoot;
+    public final boolean tradeCycling;
 
     public ModConfig(JsonObject json) {
         this.killVillagers = json.get("killVillagers").getAsBoolean();

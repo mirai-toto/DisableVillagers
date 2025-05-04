@@ -36,7 +36,7 @@ public abstract class ZombieVillagerMixin extends ZombieEntity {
 	private void onInteractMobInject(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
 		if (!DisableVillagersMod.isCurableZombies()) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			if (itemStack == Items.GOLDEN_APPLE) {
+			if (itemStack.isOf(Items.GOLDEN_APPLE)) {
 				cir.setReturnValue(ActionResult.PASS);
 			}
 		}

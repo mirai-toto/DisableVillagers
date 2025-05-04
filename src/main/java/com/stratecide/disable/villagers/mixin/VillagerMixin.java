@@ -4,6 +4,10 @@ import com.stratecide.disable.villagers.DisableVillagersMod;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
+import net.minecraft.village.VillagerData;
+import net.minecraft.village.VillagerType;
+import net.minecraft.village.VillagerProfession;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -43,8 +47,24 @@ public abstract class VillagerMixin extends MerchantEntity {
         }
     }
     
-    // TODO: Trade cycling
-
+    @Inject(method = "fillRecipes", at = @At("RETURN"))
+    private void onFillRecipesInject(CallbackInfo ci) {
+        if (!DisableVillagersMod.isTradeCycling()) {
+            VillagerEntity villager = (VillagerEntity) (Object) this;
+    
+            // Lock current profession and level
+            VillagerData data = villager.getVillagerData();
+            villager.setVillagerData(new VillagerData(
+                data.getType(),
+                data.getProfession(),
+                data.getLevel()
+            ));
+    
+            // Prevent further changes by removing job site memory
+            villager.getBrain().forget(MemoryModuleType.JOB_SITE);
+        }
+    }
+    
     @Inject(method = "onInteractionWith", at=@At("HEAD"), cancellable = true)
     private void onInteractionWithInject(EntityInteraction interaction, Entity player, CallbackInfo ci) {
         if (DisableVillagersMod.getCuredZombieLoot() == null || interaction != EntityInteraction.ZOMBIE_VILLAGER_CURED) {

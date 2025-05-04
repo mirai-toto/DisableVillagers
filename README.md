@@ -1,16 +1,42 @@
 # DisableVillagers
-https://www.curseforge.com/minecraft/mc-mods/disable-villagers
 
-Minecraft Fabric mod to disable villagers
+A lightweight **Fabric** mod to control or remove villagers and related game mechanics.
 
-This mod has 4 configuration options:
+## Configuration
 
-killVillagers: kills all loaded villagers. usually this means that no villagers are ever visible
+All options are set in the `disable-villagers.json` file, located in your `.minecraft/config/` directory.
+You must manually edit this file to change behavior.
 
-spareExperiencedVillagers: only takes effect, if the above setting is true. Villagers that have been traded with have experience, so if you want to keep some villagers but prevent more from spawning, set this to true
+### Available Options
 
-disableVillages: prevents village structures from spawning in the world
+* **`killVillagers`**
+  Instantly removes all loaded villagers.
+  *Effect: No villagers will be visible or interactable.*
 
-curedZombieLoot: if this option is set to null, curing zombie villagers is impossible.
-By supplying lootTable data (for example generated on https://misode.github.io/loot-table/ ), zombie villagers die when they are completely healed and drop the configured loot.
+* **`disableWanderingTrader`**
+  Prevents wandering traders from spawning.
 
+* **`blockTrading`**
+  Disables opening the trading interface.
+
+* **`spareExperiencedVillagers`**
+  Only works if `killVillagers` is `true`.
+  Villagers that have been traded with (i.e., have XP) will be spared.
+
+* **`breeding`**
+  Enables or disables villager breeding.
+
+* **`disableVillages`**
+  Stops village structures from generating in the world.
+
+* **`disableZombies`**
+  Prevents zombie villagers from spawning randomly.
+
+* **`curableZombies`**
+  If `false`, zombie villagers cannot be cured with golden apples, even after applying Weakness.
+
+* **`curedZombieLoot`**
+
+  * `null`: Zombie villagers cure normally.
+  * Custom loot table: Healed zombie villagers die and drop specified loot.
+    Create loot tables at [misode.github.io/loot-table](https://misode.github.io/loot-table/)
